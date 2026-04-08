@@ -80,4 +80,4 @@ def test_all_task_graders_return_score_between_zero_and_one() -> None:
     env = SupportOpsEnv()
     for task in list_task_specs():
         score = _oracle_episode(env, task.task_id)
-        assert 0.0 <= score <= 1.0
+        assert 0.0 < score < 1.0

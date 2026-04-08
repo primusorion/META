@@ -67,8 +67,8 @@ def _check_task_count_and_score_range() -> None:
             env.step(Action(action_type="resolve_ticket", ticket_id=target.ticket_id))
 
         score = float(env.state().final_score or 0.0)
-        if score < 0.0 or score > 1.0:
-            raise RuntimeError(f"Task {task.task_id} score out of range: {score}")
+        if not (0.0 < score < 1.0):
+            raise RuntimeError(f"Task {task.task_id} score must be strictly in (0,1): {score}")
 
 
 def main() -> None:

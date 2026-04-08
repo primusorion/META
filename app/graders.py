@@ -6,6 +6,9 @@ from .models import Action, TicketState
 from .tasks import TaskSpec
 
 
+SCORE_EPSILON = 1e-3
+
+
 def _ratio(num: int, den: int) -> float:
     if den <= 0:
         return 0.0
@@ -18,6 +21,12 @@ def _clip01(value: float) -> float:
     if value > 1.0:
         return 1.0
     return value
+
+
+def _to_open_unit_interval(value: float) -> float:
+    """Map [0, 1] to (0, 1) so scores are never exactly 0.0 or 1.0."""
+    clipped = _clip01(value)
+    return SCORE_EPSILON + (1.0 - 2.0 * SCORE_EPSILON) * clipped
 
 
 def grade_episode(
@@ -96,7 +105,7 @@ def grade_episode(
         score += weight * metrics[key]
 
     breakdown = {
-        "score": _clip01(score),
+        "score": _to_open_unit_interval(score),
         "resolution_score": resolution_score,
         "critical_score": critical_score,
         "routing_score": routing_score,
