@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from threading import Lock
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 
 from .env import SupportOpsEnv
@@ -252,14 +252,15 @@ def tasks() -> list[TaskSummary]:
 
 
 @app.post("/reset", response_model=Observation)
-def reset(request: ResetRequest) -> Observation:
+def reset(request: ResetRequest | None = Body(default=None)) -> Observation:
+    payload = request or ResetRequest()
     with _env_lock:
-        if request.task_id is not None:
+        if payload.task_id is not None:
             try:
-                get_task_spec(request.task_id)
+                get_task_spec(payload.task_id)
             except KeyError as exc:
                 raise HTTPException(status_code=400, detail=str(exc)) from exc
-        return _env.reset(task_id=request.task_id, seed=request.seed)
+        return _env.reset(task_id=payload.task_id, seed=payload.seed)
 
 
 @app.post("/step", response_model=StepResult)
