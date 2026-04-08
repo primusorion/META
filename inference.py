@@ -17,8 +17,8 @@ URGENCY_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 
 API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
 MODEL_NAME = os.getenv("MODEL_NAME") or "Qwen/Qwen2.5-72B-Instruct"
-API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY") or os.getenv("OPENAI_API_KEY")
-LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME") or os.getenv("IMAGE_NAME") or ""
+HF_TOKEN = os.getenv("HF_TOKEN")
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 BENCHMARK = os.getenv("BENCHMARK") or "support_ops_triage"
 SUCCESS_SCORE_THRESHOLD = float(os.getenv("SUCCESS_SCORE_THRESHOLD", "0.10"))
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.0"))
@@ -301,9 +301,9 @@ def main() -> None:
 
     llm_policy = None
     if args.policy == "llm":
-        if not API_KEY:
-            raise RuntimeError("HF_TOKEN (or API_KEY/OPENAI_API_KEY) must be set for --policy llm")
-        llm_policy = LLMPolicy(model_name=MODEL_NAME, api_base_url=API_BASE_URL, api_key=API_KEY)
+        if not HF_TOKEN:
+            raise RuntimeError("HF_TOKEN must be set for --policy llm")
+        llm_policy = LLMPolicy(model_name=MODEL_NAME, api_base_url=API_BASE_URL, api_key=HF_TOKEN)
 
     if args.task:
         get_task_spec(args.task)
