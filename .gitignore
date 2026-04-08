@@ -1,0 +1,15 @@
+.venv/
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.env
+.env.*
+outputs/
+_openenv_template/
+my_env/
+.vscode/
+.idea/
+*.egg-info/

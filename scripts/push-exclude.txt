@@ -1,0 +1,5 @@
+my_env/**
+_openenv_template/**
+.venv/**
+.pytest_cache/**
+**/__pycache__/**

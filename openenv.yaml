@@ -1,0 +1,59 @@
+id: support-ops-triage-openenv
+name: Support Ops Triage Desk
+version: 1.0.0
+description: >-
+  A real-world operations environment where an agent triages customer support
+  tickets under SLA pressure. The agent must prioritize incidents, route tickets
+  to correct specialist teams, decide escalation, and resolve work while
+  maximizing deterministic grader scores.
+domain: customer_support
+entrypoint: app.main:app
+api:
+  health: GET /health
+  tasks: GET /tasks
+  reset: POST /reset
+  step: POST /step
+  state: GET /state
+models:
+  observation: app.models.Observation
+  action: app.models.Action
+  reward: app.models.Reward
+
+runtime:
+  python: "3.11"
+  start_command: uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-7860}
+
+tasks:
+  - id: easy_priority_rescue
+    difficulty: easy
+    objective: Resolve the critical enterprise outage first and avoid immediate SLA breaches.
+  - id: medium_sla_balancing
+    difficulty: medium
+    objective: Balance queue-wide SLA risk while making efficient escalation decisions.
+  - id: hard_multi_incident_shift
+    difficulty: hard
+    objective: Manage a high-volume shift with multiple critical incidents and strict step budget.
+
+grading:
+  score_range: [0.0, 1.0]
+  deterministic: true
+  graders:
+    - app.graders.grade_episode
+
+baseline:
+  script: inference.py
+  reproducible: true
+  required_env:
+    - API_BASE_URL
+    - MODEL_NAME
+    - HF_TOKEN
+    - LOCAL_IMAGE_NAME
+  log_format:
+    - "[START] task=<task_name> env=<benchmark> model=<model_name>"
+    - "[STEP] step=<n> action=<action_str> reward=<0.00> done=<true|false> error=<msg|null>"
+    - "[END] success=<true|false> steps=<n> score=<score> rewards=<r1,r2,...,rn>"
+
+hf_space:
+  sdk: docker
+  app_port: 7860
+  tags: [openenv, reinforcement-learning, customer-support, operations]
